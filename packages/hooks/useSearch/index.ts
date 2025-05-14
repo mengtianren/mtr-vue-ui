@@ -1,11 +1,11 @@
 import Search from './search.vue'
 import type { Component } from 'vue'
-import {shallowRef,defineComponent,h} from 'vue'
+import {shallowRef,defineComponent,h,unref} from 'vue'
 import type { IField, ISearchExpose, ISearchEvent } from '@/components/baseTablePage/table-page'
 
 export const useSearch = (options: IField): [Component, ISearchExpose] => {
   console.log(options)
-  const { searchOptions, ...args } = options
+  const { searchOptions, ...args } = unref(options)
 
   const searchRef = shallowRef<InstanceType<typeof Search>>()
 

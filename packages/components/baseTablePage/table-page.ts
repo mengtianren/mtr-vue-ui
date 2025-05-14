@@ -1,10 +1,10 @@
 import type { ColumnProps } from 'ant-design-vue/es/table'
 import type { ButtonType } from 'ant-design-vue/es/button'
 import type { FormProps, FormItemProps } from 'ant-design-vue/es/form'
-import type {InputProps, TextAreaProps} from 'ant-design-vue/es/input'
-import type {InputNumberProps} from 'ant-design-vue/es/input-number'
-import type {SelectProps} from 'ant-design-vue/es/select'
-import type {SwitchProps} from 'ant-design-vue/es/switch'
+import type { InputProps, TextAreaProps } from 'ant-design-vue/es/input'
+import type { InputNumberProps } from 'ant-design-vue/es/input-number'
+import type { SelectProps } from 'ant-design-vue/es/select'
+import type { SwitchProps } from 'ant-design-vue/es/switch'
 // import type {} from './api'
 
 export type FieldType = 'number' | 'string' | 'datapicker' | 'rangepicker' | 'select' | 'treeselect' // 可扩展
@@ -21,15 +21,18 @@ interface NumberField extends BaseField {
 interface StringField extends BaseField {
   type: 'string'
 }
-
+export type TDatePicker = 'hour' | 'date' | 'month' | 'year'
 interface DataPickerField extends BaseField {
-  type: 'datapicker'
+  type: 'datapicker',
+  picker: TDatePicker
 }
-interface RangePickerField extends BaseField {
-  type: 'rangepicker'
+export interface RangePickerField extends BaseField {
+  type: 'rangepicker',
+  picker: TDatePicker,
+  config: { startKey: string, endKey: string }
 }
 
-interface SelectField extends BaseField {
+export interface SelectField extends BaseField {
   type: 'select' | 'treeselect'
   options: Array<{ value: string | number; label: string }>
 }
@@ -78,11 +81,11 @@ interface ITable {
 }
 
 
-type  TFormItemType = 'input' | 'textarea' | 'select' | 'switch'| 'number'
+type TFormItemType = 'input' | 'textarea' | 'select' | 'switch' | 'number'
 
 interface IModalFormItemProps extends FormItemProps {
   type: TFormItemType
-  config?: InputProps | TextAreaProps | InputNumberProps | SelectProps |SwitchProps
+  config?: InputProps | TextAreaProps | InputNumberProps | SelectProps | SwitchProps
 }
 
 interface IModal {
@@ -97,7 +100,7 @@ interface IModal {
 
 export interface IPAI {
   getPage: (params: Param) => Promise<any>
-  detailApi: (id: number) => Promise<{[key:string]:any}>
+  detailApi: (id: number) => Promise<{ [key: string]: any }>
   delApi: (id: number) => Promise<any>
   putApi: (data: any) => Promise<any>
   postApi: (data: any) => Promise<any>
@@ -113,16 +116,16 @@ interface IBasePageOptions {
 
 export interface IPageOptions extends IBasePageOptions {
   API: IPAI
-} 
+}
 
 
 export interface IPAIJSON {
   getPage: string
-  detailApi:string
+  detailApi: string
   delApi: string
   putApi: string
   postApi: string
 }
-export interface IPageOptionsJSON  extends  IBasePageOptions{
+export interface IPageOptionsJSON extends IBasePageOptions {
   API: IPAIJSON
 }

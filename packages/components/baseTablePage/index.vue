@@ -158,12 +158,18 @@ import type {SwitchProps} from 'ant-design-vue/es/switch'
     table.value.init || true,
     table.value.initParam
   )
-  const [SearchView, searchApi] = useSearch({
+
+const searchData = computed(()=>{
+  return {
     ...search.value,
     onCreate,
     onSearch,
     onReset
-  })
+  }
+})
+
+
+  const [SearchView, searchApi] = useSearch(searchData)
 </script>
 
 <style scoped lang="less"></style>

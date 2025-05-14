@@ -5,27 +5,29 @@
       <a-row :gutter="24">
         <a-col v-for="(propValue, index) in searchOptions" :key="index" :md="6" :sm="24">
           <a-form-item :label="propValue.label">
-            <a-input-number v-if="propValue.type.toLowerCase() === 'number'" v-model:value.trim="queryParam[propValue.name]"
-              :max="99999999" :placeholder="'请输入' + propValue.label" :controls="false" style="width: 100%" />
+            <a-input-number v-if="propValue.type.toLowerCase() === 'number'"
+              v-model:value.trim="queryParam[propValue.name]" :max="99999999" :placeholder="'请输入' + propValue.label"
+              :controls="false" style="width: 100%" />
             <a-input v-if="propValue.type.toLowerCase() === 'string'" v-model:value.trim="queryParam[propValue.name]"
               :placeholder="'请输入' + propValue.label" />
             <a-date-picker v-else-if="propValue.type.toLowerCase() === 'datapicker'"
-              v-model:value="queryParam[propValue.name]" :picker="getPicker(propValue?.picker)"
-              :show-time="getShowTime(propValue?.picker)" :format="getFormat(propValue?.picker)"
-              :value-format="getFormat(propValue?.picker)" style="width: 100%" />
+              v-model:value="queryParam[propValue.name]" :picker="getPicker(getPickerProp(propValue))"
+              :show-time="getShowTime(getPickerProp(propValue))" :format="getFormat(getPickerProp(propValue))"
+              :value-format="getFormat(getPickerProp(propValue))" style="width: 100%" />
 
             <a-range-picker v-else-if="propValue.type.toLowerCase() === 'rangepicker'"
-              v-model:value="queryParam[propValue.name]" :picker="getPicker(propValue?.picker)"
-              :show-time="getShowTime(propValue?.picker)" :format="getFormat(propValue?.picker)"
-              :value-format="getFormat(propValue?.picker)" style="width: 100%" />
+              v-model:value="queryParam[propValue.name]" :picker="getPicker(getPickerProp(propValue))"
+              :show-time="getShowTime(getPickerProp(propValue))" :format="getFormat(getPickerProp(propValue))"
+              :value-format="getFormat(getPickerProp(propValue))" style="width: 100%" />
             <a-select v-else-if="propValue.type.toLowerCase() === 'select'" v-model:value="queryParam[propValue.name]"
-              :placeholder="'请选择' + propValue.label" :options="propValue.options" />
+              :placeholder="'请选择' + propValue.label" :options="getOptionsProps(propValue)" />
             <a-tree-select v-else-if="propValue.type.toLowerCase() === 'treeselect'"
-              v-model:value="queryParam[propValue.name]" :max-tag-count="1" :show-checked-strategy="SHOW_PARENT" :tree-data="[
+              v-model:value="queryParam[propValue.name]" :max-tag-count="1" :show-checked-strategy="SHOW_PARENT"
+              :tree-data="[
                 {
                   label: '全部',
                   value: 'tree-all',
-                  children: propValue.options
+                  children: getOptionsProps(propValue)
                 }
               ]" tree-checkable tree-default-expand-all allow-clear :placeholder="'请选择' + propValue.label"
               tree-node-filter-prop="label" />
@@ -36,8 +38,7 @@
             <a-space>
               <a-button type="primary" @click="onSearch()">查询</a-button>
               <a-button @click="onReset">重置</a-button>
-              <a-button v-if="enableCreate" type="primary" class="create"
-                @click="onCreate">新增</a-button>
+              <a-button v-if="enableCreate" type="primary" class="create" @click="onCreate">新增</a-button>
               <a-button v-if="enableExport" type="primary" @click="onExport()">导出</a-button>
               <a-button v-if="enableImport" type="primary" @click="onImport()">导入</a-button>
             </a-space>
@@ -63,54 +64,83 @@ import {
 } from 'ant-design-vue'
 import { isArray } from 'lodash-es'
 import type { PickerMode } from 'ant-design-vue/es/vc-picker/interface'
+import type { TSearchOption, RangePickerField,TDatePicker } from '@/components/baseTablePage/table-page'
+import type {IProps} from './type'
 
 
-
-interface QueryParam {
+interface IQueryParam {
   [key: string]: any
 }
 
+
 const SHOW_PARENT = ATreeSelect.SHOW_PARENT
-const props = defineProps({
-  searchOptions: {
-    type: Object,
-    default: () => { }
-  },
-  enableExport: {
-    type: Boolean,
-    default: false
-  },
-  enableImport: {
-    type: Boolean,
-    default: false
-  },
-  enableCreate: {
-    type: Boolean,
-    default: false
-  }
+
+
+const props = withDefaults(defineProps<IProps>(), {
+  searchOptions: () => [],
+  enableExport: false,
+  enableImport: false,
+  enableCreate: false
 })
+
 const emits = defineEmits(['search', 'reset', 'create', 'import', 'export'])
 
 /**搜索的内容 */
-const queryParam = ref<QueryParam>({})
+const queryParam = ref<IQueryParam>({})
+
+
 
 /** 填写的内容 */
 const getQueryParam = computed(() => {
-  const param: QueryParam = {}
-  Object.keys(queryParam.value).forEach((key) => {
+  const param: IQueryParam = {}
+  const rangeArr: RangePickerField[] = props.searchOptions.filter((s: TSearchOption) => s.type === 'rangepicker')
+
+  Object.keys(queryParam.value).forEach((key: string) => {
     if (isArray(queryParam.value[key]) && queryParam.value[key].find((s) => s === 'tree-all')) {
       // 不做任何处理
     } else if (queryParam.value[key] !== null && queryParam.value[key] !== undefined) {
-      param[key] = queryParam.value[key]
+      const isRange = rangeArr.find(s => s.name === key)
+      if (isRange) {
+        const [start, end] = queryParam.value[key] || []
+        param[isRange.config.startKey] = start
+        param[isRange.config.endKey] = end
+      } else {
+        param[key] = queryParam.value[key]
+      }
       // 当字段为数组 且字段包含tree-all时删除tree-all
     }
   })
   return param
 })
 
-type PickerMode1 = PickerMode | 'hour' | 'date' | 'month' | 'year'
+
+
+
+
+
+
+const getPickerProp = (propValue: TSearchOption) => {
+  if (
+    propValue.type === 'datapicker' ||
+    propValue.type === 'rangepicker'
+  ) {
+    return propValue.picker
+  }
+  return undefined
+}
+const getOptionsProps = (propValue: TSearchOption) => {
+  if (
+    propValue.type === 'select' ||
+    propValue.type === 'treeselect'
+  ) {
+    return propValue.options
+  }
+  return []
+}
+
+
 /** 显示类型 */
-const getPicker = (picker: PickerMode1 | undefined): PickerMode => {
+const getPicker = (picker?: TDatePicker): PickerMode => {
   if (picker === 'hour' || !picker) {
     return 'date'
   } else {
@@ -142,10 +172,10 @@ const getFormat = (picker: string | undefined) => {
 /** 重置 */
 const onReset = () => {
   queryParam.value = {}
-  const general = props.searchOptions || {}
-  Object.keys(general).forEach((s) => {
-    if (general[s].type.toLowerCase() === 'treeselect') {
-      queryParam.value[s] = ['tree-all']
+  const general = props.searchOptions || []
+  general.forEach((s: TSearchOption) => {
+    if (s.type.toLowerCase() === 'treeselect') {
+      queryParam.value[s.name] = ['tree-all']
     }
   })
   emits('reset', getQueryParam.value)
@@ -180,10 +210,10 @@ const setQueryParam = (obj = {}, type = true) => {
 
 watchEffect(() => {
   queryParam.value = {}
-  const general = props.searchOptions
-  Object.keys(general).forEach((s) => {
-    if (general[s].type.toLowerCase() === 'treeselect') {
-      queryParam.value[s] = ['tree-all']
+  const general = props.searchOptions || []
+  general.forEach((s: TSearchOption) => {
+    if (s.type.toLowerCase() === 'treeselect') {
+      queryParam.value[s.name] = ['tree-all']
     }
   })
 })

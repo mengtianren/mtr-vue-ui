@@ -1,10 +1,11 @@
 {
-  "name": "mtr-vue-ui",
-  "version": "1.0.9",
+  "name": "@mengtr/page",
+  "version": "0.0.3",
   "type": "module",
-  "main": "lib/gc-ui.umd.js",
-  "module": "lib/gc-ui.es.js",
+  "main": "lib/page.umd.js",
+  "module": "lib/page.es.js",
   "types": "lib/index.d.ts",
+  "private": false,
   "files": [
     "lib",
     "package.json"
@@ -15,10 +16,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gc/ui": "file:",
+    "@mengtr/page": "file:",
     "ant-design-vue": "^4.2.6",
     "lodash-es": "^4.17.21",
-    "mtr-vue-ui": "file:",
     "vue": "^3.5.13"
   },
   "devDependencies": {

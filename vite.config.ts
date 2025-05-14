@@ -19,9 +19,9 @@ export default defineConfig({
     outDir: 'lib',
     lib: {
       entry: 'packages/index.ts',
-      name: 'gc-ui',
-      fileName: (format) => `gc-ui.${format}.js`,
-      cssFileName:"gc-ui"
+      name: 'page',
+      fileName: (format) => `page.${format}.js`,
+      cssFileName:"page"
     },
     rollupOptions: {
       external: ['vue', 'ant-design-vue','lodash-es',"less"],
