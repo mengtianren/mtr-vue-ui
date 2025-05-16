@@ -1,6 +1,6 @@
 {
   "name": "@mengtr/page",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "lib/page.umd.js",
   "module": "lib/page.es.js",

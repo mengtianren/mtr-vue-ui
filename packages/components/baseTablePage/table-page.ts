@@ -5,6 +5,7 @@ import type { InputProps, TextAreaProps } from 'ant-design-vue/es/input'
 import type { InputNumberProps } from 'ant-design-vue/es/input-number'
 import type { SelectProps } from 'ant-design-vue/es/select'
 import type { SwitchProps } from 'ant-design-vue/es/switch'
+import type { ModalProps } from 'ant-design-vue/es/modal'
 // import type {} from './api'
 
 export type FieldType = 'number' | 'string' | 'datapicker' | 'rangepicker' | 'select' | 'treeselect' // 可扩展
@@ -81,19 +82,60 @@ interface ITable {
 }
 
 
-type TFormItemType = 'input' | 'textarea' | 'select' | 'switch' | 'number'
+export type TFormItemType = 'input' | 'textarea' | 'select' | 'switch' | 'number' | 'object'
 
-interface IModalFormItemProps extends FormItemProps {
-  type: TFormItemType
-  config?: InputProps | TextAreaProps | InputNumberProps | SelectProps | SwitchProps
+// 基础字段定义
+interface IBaseFormItem extends FormItemProps {
+  name: string
+  label?: string
 }
 
+// 单个组件类型
+interface IInputFormItem extends IBaseFormItem {
+  type: 'input'
+  config?: InputProps
+}
+
+interface ITextareaFormItem extends IBaseFormItem {
+  type: 'textarea'
+  config?: TextAreaProps
+}
+
+interface ISelectFormItem extends IBaseFormItem {
+  type: 'select'
+  config?: SelectProps
+}
+
+interface ISwitchFormItem extends IBaseFormItem {
+  type: 'switch'
+  config?: SwitchProps
+}
+
+interface INumberFormItem extends IBaseFormItem {
+  type: 'number'
+  config?: InputNumberProps
+}
+
+// object 嵌套字段（递归）
+interface IObjectFormItem extends IBaseFormItem {
+  type: 'object'
+  fields: IFormItem[]
+}
+
+// 所有字段的联合类型
+export type IFormItem =
+  | IInputFormItem
+  | ITextareaFormItem
+  | ISelectFormItem
+  | ISwitchFormItem
+  | INumberFormItem
+  | IObjectFormItem
+
 interface IModal {
-  title: string
-  width?: number
+config:ModalProps
   form: {
     config: FormProps
-    fields: IModalFormItemProps[]
+    fields: IFormItem[]
   }
 }
 

@@ -61,6 +61,7 @@ import {
   RangePicker as ARangePicker,
   Row as ARow,
   Col as aCol, FormItem as AFormItem, Space as ASpace,
+  InputNumber as AInputNumber,
 } from 'ant-design-vue'
 import { isArray } from 'lodash-es'
 import type { PickerMode } from 'ant-design-vue/es/vc-picker/interface'

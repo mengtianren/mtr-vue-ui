@@ -198,7 +198,7 @@
   integrity sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==
 
 "@mengtr/page@file:":
-  version "0.0.3"
+  version "0.0.4"
   resolved "file:"
   dependencies:
     "@mengtr/page" "file:"
